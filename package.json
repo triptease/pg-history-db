@@ -3,8 +3,26 @@
   "version": "0.1.0",
   "description": "Append-only database driver for PostgreSQL",
   "main": "dist/index.js",
+  "umd:main": "dist/index.umd.js",
   "source": "src/index.ts",
-  "repository": "https://github.com/triptease/pg-history-db",
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/triptease/pg-history-db"
+  },
+  "scripts": {
+    "start": "microbundle --watch",
+    "build": "rm -rf dist && NODE_ENV=production microbundle",
+    "release": "yarn build && standard-version"
+  },
+  "devDependencies": {
+    "microbundle": "^0.7.0",
+    "prettier": "^1.15.2",
+    "standard-version": "^4.4.0",
+    "typescript": "^3.1.6"
+  },
   "author": "Triptease",
   "license": "MIT",
   "keywords": [
