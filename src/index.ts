@@ -1,1 +1,1 @@
-export const insert = () => {}
+export { insert, retrieve, retrieveHistory } from './db'

@@ -1,5 +1,8 @@
-node_modules
+node_modules/
 
-dist
+dist/
 
 .rts2_cache*
+
+yarn-debug.log*
+yarn-error.log*
