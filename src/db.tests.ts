@@ -7,15 +7,15 @@ import { object1, object2 } from './testdata'
 describe('historyDB', () => {
   it('Can store and retrieve data', async () => {
     const createdObject1 = await insert(object1)
-    expect(createdObject1.id.length).toBeGreaterThan(0)
+    expect(createdObject1.entityId.length).toBeGreaterThan(0)
 
     const createdObject2 = await insert(object2)
-    expect(createdObject2.id.length).toBeGreaterThan(0)
+    expect(createdObject2.entityId.length).toBeGreaterThan(0)
 
-    const retrievedObject1 = await retrieve(createdObject1.id)
+    const retrievedObject1 = await retrieve(createdObject1.entityId)
     expect(retrievedObject1.data).toEqual(object1.data)
 
-    const retrievedObject2 = await retrieve(createdObject2.id)
+    const retrievedObject2 = await retrieve(createdObject2.entityId)
     expect(retrievedObject2.data).toEqual(object2.data)
 
     const changedObject1 = {
@@ -30,7 +30,7 @@ describe('historyDB', () => {
     expect(updatedObject1.data.newProp).toBe('new value')
     expect(updatedObject1.version).toBe(2)
 
-    const retrievedChangedObject1 = await retrieve(createdObject1.id)
+    const retrievedChangedObject1 = await retrieve(createdObject1.entityId)
     expect(retrievedChangedObject1.data).toEqual(changedObject1.data)
     expect(retrievedChangedObject1.version).toBe(2)
   })
@@ -65,13 +65,13 @@ describe('historyDB', () => {
     }
     await insert(changedObject3)
 
-    const history = await retrieveHistory(createdObject.id)
+    const history = await retrieveHistory(createdObject.entityId)
     expect(history.length).toBe(4)
-    expect(history.map((item: any) => item.version)).toEqual([1, 2, 3, 4])
-    expect(history.find((item: any) => item.version === 1).data.newProp).toBe(undefined)
-    expect(history.find((item: any) => item.version === 2).data.newProp).toBe('initial new prop')
-    expect(history.find((item: any) => item.version === 3).data.newProp).toBe('latest new prop')
-    expect(history.find((item: any) => item.version === 4).data.newProp).toBe('latest new prop')
-    expect(history.find((item: any) => item.version === 4).data.newProp2).toBe('another new prop')
+    expect(history.map(item => item.version)).toEqual([1, 2, 3, 4])
+    expect(history.find(item => item.version === 1).data.newProp).toBe(undefined)
+    expect(history.find(item => item.version === 2).data.newProp).toBe('initial new prop')
+    expect(history.find(item => item.version === 3).data.newProp).toBe('latest new prop')
+    expect(history.find(item => item.version === 4).data.newProp).toBe('latest new prop')
+    expect(history.find(item => item.version === 4).data.newProp2).toBe('another new prop')
   })
 })
