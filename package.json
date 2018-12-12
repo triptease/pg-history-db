@@ -1,5 +1,5 @@
 {
-  "name": "pg-history-db",
+  "name": "@triptease/pg-history-db",
   "version": "0.2.0",
   "description": "Append-only database driver for PostgreSQL",
   "main": "dist/index.js",
