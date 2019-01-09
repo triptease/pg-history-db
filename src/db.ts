@@ -9,7 +9,10 @@ type InsertBody = {
   data: any
 }
 
-type RetrieveBody = InsertBody & {
+type RetrieveBody = {
+  entityId: EntityId
+  userId: string
+  data: any
   timestamp: Date
   version: number
 }
@@ -91,7 +94,37 @@ export const retrieveHistory = async (id: EntityId): Promise<RetrieveBody[]> => 
     const result = await client.query(RETRIEVE_HISTORY_QUERY, [id])
     await client.end()
     const objects = result.rows.map(row => ({
-      id: row.entity_id,
+      entityId: row.entity_id,
+      userId: row.user_id,
+      timestamp: row.timestamp,
+      version: row.version,
+      data: row.data,
+    }))
+    return objects
+  } catch (e) {
+    console.error(e)
+    return Promise.reject(e)
+  }
+}
+
+export const retrieveAll = async (where: string): Promise<RetrieveBody[]> => {
+  try {
+    const client = new Client()
+    await client.connect()
+    const RETRIEVE_ALL_QUERY = `
+      SELECT *
+      FROM objects as outerObjects
+      WHERE version=(
+        SELECT max(version)
+        FROM objects as innerObjects
+        WHERE innerObjects.entity_id=outerObjects.entity_id
+      ) 
+        AND data->>${where}
+    `
+    const result = await client.query(RETRIEVE_ALL_QUERY)
+    await client.end()
+    const objects = result.rows.map(row => ({
+      entityId: row.entity_id,
       userId: row.user_id,
       timestamp: row.timestamp,
       version: row.version,

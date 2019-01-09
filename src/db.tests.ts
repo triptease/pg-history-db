@@ -1,7 +1,8 @@
 import { config } from 'dotenv'
 config()
+import uuid from 'uuid'
 
-import { insert, retrieve, retrieveHistory } from './db'
+import { insert, retrieve, retrieveAll, retrieveHistory } from './db'
 import { object1, object2 } from './testdata'
 
 describe('historyDB', () => {
@@ -73,5 +74,39 @@ describe('historyDB', () => {
     expect(history.find(item => item.version === 3).data.newProp).toBe('latest new prop')
     expect(history.find(item => item.version === 4).data.newProp).toBe('latest new prop')
     expect(history.find(item => item.version === 4).data.newProp2).toBe('another new prop')
+  })
+
+  it('Can retrieve every item in the database for a given condition', async () => {
+    const specialCondition = `UNIQUE_VALUE_${uuid.v4()}`
+    const createdObject1 = await insert({
+      ...object1,
+      data: {
+        ...object1.data,
+        specialCondition,
+      },
+    })
+    const createdObject2 = await insert({
+      ...object2,
+      data: {
+        ...object2.data,
+        specialCondition,
+      },
+    })
+
+    const changedObject1 = {
+      ...createdObject1,
+      data: {
+        ...createdObject1.data,
+        newProp: 'initial new prop',
+      },
+    }
+    const insertedChangedObject1 = await insert(changedObject1)
+
+    const retrieveWhere = `'specialCondition'='${specialCondition}'`
+    const all = await retrieveAll(retrieveWhere)
+
+    expect(all.length).toBe(2)
+    expect(all).toContainEqual(insertedChangedObject1)
+    expect(all).toContainEqual(createdObject2)
   })
 })
