@@ -1,1 +1,1 @@
-export { insert, retrieve, retrieveHistory } from './db'
+export { insert, retrieve, retrieveAll, retrieveHistory } from './db'
